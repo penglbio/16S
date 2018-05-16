@@ -1,0 +1,35 @@
+species: Kinamaze
+
+seq_info:
+  type: WGS
+  stranded: yes
+  mode: PE
+  replicate: 1
+
+path: /var/data/03_ZHM/16s/suhui/fastq
+
+samples:
+  - 1
+#  - Kin-I_combined
+
+group1:
+  - 104-1
+  - 104-3-1
+
+group2:
+  - Kin-I
+  
+cpu: 30
+
+
+Rscript_path: /home/lpeng/software/R3.2.5/bin/Rscript
+
+ref_gold_seq: /home/lpeng/Gmatic5/genome/16s/gold.fa
+
+pick_otu_params: /home/lpeng/Gmatic5/genome/16s/param.txt
+
+adapter: /home/lpeng/software/miniconda3/pkgs/trimmomatic-0.36-4/share/trimmomatic-0.36-4/adapters/TruSeq2-PE.fa
+
+index: /home/lpeng/Gmatic5/genome/tair10/tair10 
+
+genome: /home/lpeng/Gmatic5/genome/tair10/tair.fa
