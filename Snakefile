@@ -12,7 +12,7 @@ rule all:
 		expand('fastqc/clean/{sample}_R1_paired_fastqc.html', sample=config['samples']),
 		expand('fastqc/clean/{sample}_R2_paired_fastqc.html', sample=config['samples']), expand('stat/fastqc_stat.tsv'),
 		expand('assemble/{sample}.extendedFrags.fastq',sample=config['samples']),
-		expand('barcode/{sample}_barcode',sample=config['samples']),
+		expand('barcode/{sample}_barcode/barcodes.fastq',sample=config['samples']),
 		expand('demuplix/{sample}/seqs.fna',sample=config['samples']),
 		'demuplix/merge_seqs.fna',
 		'split_seq',
@@ -104,9 +104,10 @@ rule extract_barcode:
 	input:
 		'assemble/{sample}.extendedFrags.fastq'
 	output:
-		'barcode/{sample}_barcode'
+		o1='barcode/{sample}_barcode',
+		o2='barcode/{sample}_barcode/barcodes.fastq'
 	shell:
-		"extract_barcodes.py -f {input} -o {output} -c barcode_in_label --char_delineator '1:N:0:' -l 8"
+		"extract_barcodes.py -f {input} -o {output.o1} -c barcode_in_label --char_delineator '1:N:0:' -l 8"
 
 rule split_library:
 	input:
