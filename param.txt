@@ -1,0 +1,6 @@
+pick_otus:enable_rev_strand_match True
+pich_otus:threads 40
+pich_otus:reference_seqs_fp /home/lpeng/software/99_otus.fasta
+assign_taxonomy:assignment_method rdp
+assign_taxonomy:id_to_taxonomy_fp /home/lpeng/software/99_otu_taxonomy.txt
+assign_taxonomy:reference_seqs_fp /home/lpeng/software/99_otus.fasta

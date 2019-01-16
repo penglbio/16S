@@ -2,7 +2,7 @@ configfile: "config.yaml"
 
 rule all:
 	input:
-		expand('barcode/{sample}_barcode.fq',sample=config['samples']),
+		#expand('barcode/{sample}_barcode.fq',sample=config['samples']),
 		expand('cut_fastq/{sample}_R1.fastq.gz',sample=config['samples']),
 		expand('cut_fastq/{sample}_R1.fastq.gz',sample=config['samples']),
 		expand('clean/{sample}_R1_paired.fastq.gz', sample=config['samples']),
@@ -19,19 +19,22 @@ rule all:
 		'chimeric/seqs_chimeric_filtered.fna',
 		'otus',
 		'result/table/otus_table.txt',
-		'result/summary/taxa_summ',
-		'result/table/rich_sparse_otu_table_summary.txt'
+		'result/summary/taxa_summ/otu_table_mc2_w_tax_no_pynast_failures_sorted_L5.biom',
+		'result/table/rich_sparse_otu_table_summary.txt',
+		'alpha/arare_raw'
+		
+
 
 rule barcode_extract:
 	input:
 		r1='fastq/{sample}_R1.fastq.gz',
 		r2='fastq/{sample}_R2.fastq.gz'
-	output:
-		barc='barcode/{sample}_barcode.fq',
+	output:	
+		bar='barcode/{sample}_barcode.fq',
 		cuf1='cut_fastq/{sample}_R1.fastq.gz',
 		cuf2='cut_fastq/{sample}_R2.fastq.gz'	
 	shell:
-		"paste <(seqkit subseq -r 5:8 {input.r1} |seqkit fx2tab ) <(seqkit subseq -r 5:8 {input.r2}|seqkit fx2tab)|csvtk cut -t -f 1,2,5,3,6|sed 's/\\t/****/'|sed 's/\\t//'|sed 's/\\t/****/'|sed 's/\\t//' |sed 's/\*\*\*\*/\\t/g'|sed -e 's/\:0\:[ATCG]*/:0:/'|awk -F'\\t' -vOFS='\\t' '{{print $1$2,$2,$3}}'|seqkit tab2fx >{output.barc} ; paste <(seqkit fx2tab {output.barc}|cut -f2) <(seqkit subseq -r 28:-1 {input.r1}|seqkit fx2tab)|sed -e 's/\:0\:[ATCG]*/:0:/'|awk -F'\\t' -vOFS='\\t' '{{print $2$1,$3,$4}}' |seqkit tab2fx |gzip -c > {output.cuf1} ; paste <(seqkit fx2tab {output.barc}|cut -f2) <(seqkit subseq -r 28:-1 {input.r2}|seqkit fx2tab)|sed -e 's/\:0\:[ATCG]*/:0:/'|awk -F'\\t' -vOFS='\\t' '{{print $2$1,$3,$4}}' |seqkit tab2fx |gzip -c > {output.cuf2}"
+		'cat *L1*.R1* >L1_R1.fastq.gz;cat *L1*.R2* >L1_R2.fastq.gz;cat *L2*.R1* >L2_R1.fastq.gz;cat *L2*.R2* >L2_R2.fastq.gz'
 
 rule fastqc_raw_PE:
 	input:
@@ -55,7 +58,7 @@ rule trimmomatic_PE:
 	params:
 		adapter = config['adapter']
 	shell:
-		'trimmomatic PE -threads 30 -phred33 {input.r1} {input.r2} {output.r1_paired} {output.r1_unpaired} {output.r2_paired} {output.r2_unpaired} ILLUMINACLIP:{params.adapter}:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:160'
+		'trimmomatic PE -threads 30 -phred33 {input.r1} {input.r2} {output.r1_paired} {output.r1_unpaired} {output.r2_paired} {output.r2_unpaired} ILLUMINACLIP:{params.adapter}:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:100'
 
 rule fastqc_clean_PE:
 	input:
@@ -107,7 +110,7 @@ rule extract_barcode:
 		o1='barcode/{sample}_barcode',
 		o2='barcode/{sample}_barcode/barcodes.fastq'
 	shell:
-		"extract_barcodes.py -f {input} -o {output.o1} -c barcode_in_label --char_delineator '1:N:0:' -l 8"
+		"extract_barcodes.py -f {input} -o {output.o1} -c barcode_in_label --char_delineator '1:N:0:' -l 15"
 
 rule split_library:
 	input:
@@ -118,7 +121,7 @@ rule split_library:
 		o1='demuplix/{sample}/seqs.fna',
 		o2='demuplix/{sample}'
 	shell:
-		'split_libraries_fastq.py -o {output.o2} -i {input.r1} -b {input.r2} -m {input.map} --barcode_type 8 '	
+		'split_libraries_fastq.py -o {output.o2} -i {input.r1} -b {input.r2} -m {input.map} --barcode_type 15 '	
 
 rule merge_seq:
 	input:
@@ -132,9 +135,10 @@ rule split_file:
 	input:
 		'demuplix/merge_seqs.fna'
 	output:
-		'split_seq'
+		o1='split_seq',
+		o2='split_seq/merge_seqs.part_001.fna'
 	shell:
-		'seqkit split -p 128 -O split_seq {input}'	
+		'seqkit split -p 128 -O {output.o1} {input} -f'	
 
 rule remove_chimeric:
 	input:
@@ -147,7 +151,7 @@ rule remove_chimeric:
 		out2='chimeric/chimerics.txt',
 		out3='chimeric/seqs_chimeric_filtered.fna'
 	shell:
-		"ls {input.r1}/merge_seqs.part_*|rush 'identify_chimeric_seqs.py -i {{}} -m usearch61 -o {output.out1}/{{%.}}_chimeric -r {params}' ; cat {output.out1}/*/chimeras.txt >{output.out2} ;filter_fasta.py -f {input.r2} -o {output.out3} -s {output.out2} -n"	
+		"ls {input.r1}/merge_seqs.part_*|rush 'identify_chimeric_seqs.py -i {{}} -m usearch61 -o {output.out1}/{{%.}}_chimeric -r {params}' ; cat {output.out1}/*/chimeras.txt > {output.out2} ;filter_fasta.py -f {input.r2} -o {output.out3} -s {output.out2} -n"	
 
 rule pick_otus:
 	input:
@@ -158,7 +162,7 @@ rule pick_otus:
 		o1='otus',
 		o2='otus/otu_table_mc2_w_tax_no_pynast_failures.biom'
 	shell:
-		'pick_open_reference_otus.py -i {input} -o {output.o1}  -p {params} --suppress_step4 --min_otu_size 2 -f '
+		'pick_open_reference_otus.py -i {input} -o {output}  -p {params} --suppress_step4 --min_otu_size 2 -f '
 
 rule otu_table:
 	input:
@@ -173,9 +177,10 @@ rule otu_summary:
 		r1='otus/otu_table_mc2_w_tax_no_pynast_failures.biom',
 		map='doc/map.tsv'	
 	output:
-		'result/summary/taxa_summ'	
+		o1='result/summary/taxa_summ',
+		o2='result/summary/taxa_summ/otu_table_mc2_w_tax_no_pynast_failures_sorted_L5.biom'	
 	shell:
-		'summarize_taxa_through_plots.py -i {input.r1} -o {output} -m {input.map} -s'
+		'summarize_taxa_through_plots.py -i {input.r1} -o {output.o1} -m {input.map} -s -f'
 
 rule biom_summary:
 	input:
@@ -184,3 +189,18 @@ rule biom_summary:
 		'result/table/rich_sparse_otu_table_summary.txt'
 	shell:
 		'biom summarize-table -i {input} -o {output}'
+
+rule alpha_raw_diversity:
+	input:
+		o1='otus/otu_table_mc2_w_tax_no_pynast_failures.biom',
+		map='doc/map.tsv'
+	params:
+		config['alpha_params']
+	output:
+		'alpha/arare_raw'	
+	shell:
+		'alpha_rarefaction.py -i {input.o1} -m {input.map} -o {output} -p {params}'
+
+
+
+

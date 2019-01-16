@@ -4,32 +4,28 @@ seq_info:
   type: WGS
   stranded: yes
   mode: PE
-  replicate: 1
+  replicate: 4
 
-path: /var/data/03_ZHM/16s/suhui/fastq
+path: /var/data/16.Richa_16s/
 
 samples:
-  - 1
-#  - Kin-I_combined
-
-group1:
-  - 104-1
-  - 104-3-1
-
-group2:
-  - Kin-I
+  - L1
+  - L2
   
 cpu: 30
 
+cov_num: 18000
 
-Rscript_path: /home/lpeng/software/R3.2.5/bin/Rscript
+Rscript_path: /home/galaxy/R/3.5.0/bin/Rscript
 
-ref_gold_seq: /home/lpeng/Gmatic5/genome/16s/gold.fa
+ref_gold_seq: /home/galaxy/Gmatic5/genome/16s/gold.fa
 
-pick_otu_params: /home/lpeng/Gmatic5/genome/16s/param.txt
+pick_otu_params: /home/galaxy/Gmatic5/genome/16s/param.txt
 
-adapter: /home/lpeng/software/miniconda3/pkgs/trimmomatic-0.36-4/share/trimmomatic-0.36-4/adapters/TruSeq2-PE.fa
+alpha_params: /home/galaxy/Gmatic5/genome/16s/alpha_params.txt
 
-index: /home/lpeng/Gmatic5/genome/tair10/tair10 
+adapter: /home/galaxy/software/miniconda3/pkgs/trimmomatic-0.36-4/share/trimmomatic-0.36-4/adapters/TruSeq2-PE.fa
 
-genome: /home/lpeng/Gmatic5/genome/tair10/tair.fa
+index: /home/galaxy/Gmatic5/genome/tair10/tair10 
+
+genome: /home/galaxy/Gmatic5/genome/tair10/tair.fa

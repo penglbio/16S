@@ -1,0 +1,1007 @@
+Provided cores: 30
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	alpha_raw_diversity
+	1	biom_summary
+	2	extract_barcode
+	2	fastqc_clean_PE
+	2	fastqc_raw_PE
+	1	fastqc_stat_PE
+	2	flash
+	1	merge_seq
+	1	otu_summary
+	1	otu_table
+	1	pick_otus
+	1	remove_chimeric
+	1	split_file
+	2	split_library
+	2	trimmomatic_PE
+	22
+
+rule fastqc_raw_PE:
+    input: cut_fastq/L1_R1.fastq.gz, cut_fastq/L1_R2.fastq.gz
+    output: fastqc/raw/L1_R1_fastqc.html, fastqc/raw/L1_R2_fastqc.html
+    jobid: 6
+    reason: Missing output files: fastqc/raw/L1_R1_fastqc.html, fastqc/raw/L1_R2_fastqc.html
+    wildcards: sample=L1
+
+fastqc -t 2 -o fastqc/raw cut_fastq/L1_R1.fastq.gz cut_fastq/L1_R2.fastq.gz
+
+rule trimmomatic_PE:
+    input: cut_fastq/L2_R1.fastq.gz, cut_fastq/L2_R2.fastq.gz
+    output: clean/L2_R1_paired.fastq.gz, clean/L2_R2_paired.fastq.gz, clean/L2_R1_unpaired.fastq.gz, clean/L2_R2_unpaired.fastq.gz
+    jobid: 2
+    reason: Missing output files: clean/L2_R1_paired.fastq.gz, clean/L2_R2_paired.fastq.gz
+    wildcards: sample=L2
+
+trimmomatic PE -threads 30 -phred33 cut_fastq/L2_R1.fastq.gz cut_fastq/L2_R2.fastq.gz clean/L2_R1_paired.fastq.gz clean/L2_R1_unpaired.fastq.gz clean/L2_R2_paired.fastq.gz clean/L2_R2_unpaired.fastq.gz ILLUMINACLIP:/home/lpeng/software/miniconda3/pkgs/trimmomatic-0.36-4/share/trimmomatic-0.36-4/adapters/TruSeq2-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:100
+
+rule trimmomatic_PE:
+    input: cut_fastq/L1_R1.fastq.gz, cut_fastq/L1_R2.fastq.gz
+    output: clean/L1_R1_paired.fastq.gz, clean/L1_R2_paired.fastq.gz, clean/L1_R1_unpaired.fastq.gz, clean/L1_R2_unpaired.fastq.gz
+    jobid: 7
+    reason: Missing output files: clean/L1_R1_paired.fastq.gz, clean/L1_R2_paired.fastq.gz
+    wildcards: sample=L1
+
+trimmomatic PE -threads 30 -phred33 cut_fastq/L1_R1.fastq.gz cut_fastq/L1_R2.fastq.gz clean/L1_R1_paired.fastq.gz clean/L1_R1_unpaired.fastq.gz clean/L1_R2_paired.fastq.gz clean/L1_R2_unpaired.fastq.gz ILLUMINACLIP:/home/lpeng/software/miniconda3/pkgs/trimmomatic-0.36-4/share/trimmomatic-0.36-4/adapters/TruSeq2-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:100
+
+rule fastqc_raw_PE:
+    input: cut_fastq/L2_R1.fastq.gz, cut_fastq/L2_R2.fastq.gz
+    output: fastqc/raw/L2_R1_fastqc.html, fastqc/raw/L2_R2_fastqc.html
+    jobid: 5
+    reason: Missing output files: fastqc/raw/L2_R2_fastqc.html, fastqc/raw/L2_R1_fastqc.html
+    wildcards: sample=L2
+
+fastqc -t 2 -o fastqc/raw cut_fastq/L2_R1.fastq.gz cut_fastq/L2_R2.fastq.gz
+TrimmomaticPE: Started with arguments:TrimmomaticPE: Started with arguments:
+
+ -threads -threads 30 30 -phred33 -phred33 cut_fastq/L1_R1.fastq.gz cut_fastq/L2_R1.fastq.gz cut_fastq/L1_R2.fastq.gz cut_fastq/L2_R2.fastq.gz clean/L1_R1_paired.fastq.gz clean/L2_R1_paired.fastq.gz clean/L1_R1_unpaired.fastq.gz clean/L2_R1_unpaired.fastq.gz clean/L1_R2_paired.fastq.gz clean/L2_R2_paired.fastq.gz clean/L1_R2_unpaired.fastq.gz clean/L2_R2_unpaired.fastq.gz ILLUMINACLIP:/home/lpeng/software/miniconda3/pkgs/trimmomatic-0.36-4/share/trimmomatic-0.36-4/adapters/TruSeq2-PE.fa:2:30:10 ILLUMINACLIP:/home/lpeng/software/miniconda3/pkgs/trimmomatic-0.36-4/share/trimmomatic-0.36-4/adapters/TruSeq2-PE.fa:2:30:10 LEADING:3 LEADING:3 TRAILING:3 TRAILING:3 SLIDINGWINDOW:4:15 SLIDINGWINDOW:4:15 MINLEN:100 MINLEN:100
+
+java.io.FileNotFoundException: /home/lpeng/software/miniconda3/pkgs/trimmomatic-0.36-4/share/trimmomatic-0.36-4/adapters/TruSeq2-PE.fa (No such file or directory)java.io.FileNotFoundException: /home/lpeng/software/miniconda3/pkgs/trimmomatic-0.36-4/share/trimmomatic-0.36-4/adapters/TruSeq2-PE.fa (No such file or directory)
+
+	at java.io.FileInputStream.open0(Native Method)	at java.io.FileInputStream.open0(Native Method)
+
+	at java.io.FileInputStream.open(FileInputStream.java:195)	at java.io.FileInputStream.open(FileInputStream.java:195)
+
+	at java.io.FileInputStream.<init>(FileInputStream.java:138)	at java.io.FileInputStream.<init>(FileInputStream.java:138)
+
+	at org.usadellab.trimmomatic.fasta.FastaParser.parse(FastaParser.java:54)	at org.usadellab.trimmomatic.fasta.FastaParser.parse(FastaParser.java:54)
+
+	at org.usadellab.trimmomatic.trim.IlluminaClippingTrimmer.loadSequences(IlluminaClippingTrimmer.java:110)	at org.usadellab.trimmomatic.trim.IlluminaClippingTrimmer.loadSequences(IlluminaClippingTrimmer.java:110)
+
+	at org.usadellab.trimmomatic.trim.IlluminaClippingTrimmer.makeIlluminaClippingTrimmer(IlluminaClippingTrimmer.java:71)	at org.usadellab.trimmomatic.trim.IlluminaClippingTrimmer.makeIlluminaClippingTrimmer(IlluminaClippingTrimmer.java:71)
+
+	at org.usadellab.trimmomatic.trim.TrimmerFactory.makeTrimmer(TrimmerFactory.java:32)	at org.usadellab.trimmomatic.trim.TrimmerFactory.makeTrimmer(TrimmerFactory.java:32)
+
+	at org.usadellab.trimmomatic.Trimmomatic.createTrimmers(Trimmomatic.java:59)	at org.usadellab.trimmomatic.Trimmomatic.createTrimmers(Trimmomatic.java:59)
+
+	at org.usadellab.trimmomatic.TrimmomaticPE.run(TrimmomaticPE.java:536)	at org.usadellab.trimmomatic.TrimmomaticPE.run(TrimmomaticPE.java:536)
+
+	at org.usadellab.trimmomatic.Trimmomatic.main(Trimmomatic.java:80)	at org.usadellab.trimmomatic.Trimmomatic.main(Trimmomatic.java:80)
+
+Started analysis of L1_R1.fastq.gz
+Started analysis of L2_R1.fastq.gz
+Started analysis of L1_R2.fastq.gz
+Started analysis of L2_R2.fastq.gz
+Approx 5% complete for L1_R1.fastq.gz
+Approx 5% complete for L1_R2.fastq.gz
+Approx 5% complete for L2_R1.fastq.gz
+Approx 5% complete for L2_R2.fastq.gz
+Approx 10% complete for L1_R1.fastq.gz
+Approx 10% complete for L1_R2.fastq.gz
+Approx 10% complete for L2_R1.fastq.gz
+Approx 10% complete for L2_R2.fastq.gz
+Approx 15% complete for L1_R1.fastq.gz
+Approx 15% complete for L1_R2.fastq.gz
+Approx 15% complete for L2_R1.fastq.gz
+Approx 20% complete for L1_R1.fastq.gz
+Approx 15% complete for L2_R2.fastq.gz
+Approx 20% complete for L1_R2.fastq.gz
+Approx 20% complete for L2_R1.fastq.gz
+Approx 25% complete for L1_R1.fastq.gz
+Approx 25% complete for L1_R2.fastq.gz
+Approx 25% complete for L2_R1.fastq.gz
+Approx 20% complete for L2_R2.fastq.gz
+Approx 30% complete for L1_R1.fastq.gz
+Approx 30% complete for L1_R2.fastq.gz
+Approx 30% complete for L2_R1.fastq.gz
+Approx 25% complete for L2_R2.fastq.gz
+Approx 35% complete for L1_R1.fastq.gz
+Approx 35% complete for L1_R2.fastq.gz
+Approx 40% complete for L1_R1.fastq.gz
+Approx 35% complete for L2_R1.fastq.gz
+Approx 30% complete for L2_R2.fastq.gz
+Approx 40% complete for L1_R2.fastq.gz
+Approx 45% complete for L1_R1.fastq.gz
+Approx 40% complete for L2_R1.fastq.gz
+Approx 45% complete for L1_R2.fastq.gz
+Approx 50% complete for L1_R1.fastq.gz
+Approx 35% complete for L2_R2.fastq.gz
+Approx 50% complete for L1_R2.fastq.gz
+Approx 55% complete for L1_R1.fastq.gz
+Approx 45% complete for L2_R1.fastq.gz
+Approx 40% complete for L2_R2.fastq.gz
+Approx 55% complete for L1_R2.fastq.gz
+Approx 60% complete for L1_R1.fastq.gz
+Approx 50% complete for L2_R1.fastq.gz
+Approx 45% complete for L2_R2.fastq.gz
+Approx 60% complete for L1_R2.fastq.gz
+Approx 65% complete for L1_R1.fastq.gz
+Approx 55% complete for L2_R1.fastq.gz
+Approx 50% complete for L2_R2.fastq.gz
+Approx 70% complete for L1_R1.fastq.gz
+Approx 65% complete for L1_R2.fastq.gz
+Approx 60% complete for L2_R1.fastq.gz
+Approx 75% complete for L1_R1.fastq.gz
+Approx 70% complete for L1_R2.fastq.gz
+Approx 55% complete for L2_R2.fastq.gz
+Approx 65% complete for L2_R1.fastq.gz
+Approx 80% complete for L1_R1.fastq.gz
+Approx 75% complete for L1_R2.fastq.gz
+Approx 60% complete for L2_R2.fastq.gz
+Approx 85% complete for L1_R1.fastq.gz
+Approx 80% complete for L1_R2.fastq.gz
+Approx 70% complete for L2_R1.fastq.gz
+Approx 65% complete for L2_R2.fastq.gz
+Approx 90% complete for L1_R1.fastq.gz
+Approx 85% complete for L1_R2.fastq.gz
+Approx 75% complete for L2_R1.fastq.gz
+Approx 95% complete for L1_R1.fastq.gz
+Approx 90% complete for L1_R2.fastq.gz
+Approx 70% complete for L2_R2.fastq.gz
+Approx 80% complete for L2_R1.fastq.gz
+Analysis complete for L1_R1.fastq.gz
+Approx 95% complete for L1_R2.fastq.gz
+Approx 75% complete for L2_R2.fastq.gz
+Approx 85% complete for L2_R1.fastq.gz
+Approx 80% complete for L2_R2.fastq.gz
+Approx 90% complete for L2_R1.fastq.gz
+Analysis complete for L1_R2.fastq.gz
+Approx 85% complete for L2_R2.fastq.gz
+Approx 95% complete for L2_R1.fastq.gz
+Approx 90% complete for L2_R2.fastq.gz
+Analysis complete for L2_R1.fastq.gz
+Fontconfig error: Cannot load default config file
+Approx 95% complete for L2_R2.fastq.gz
+Analysis complete for L2_R2.fastq.gz
+Finished job 5.
+1 of 22 steps (5%) done
+Input Read Pairs: 13026840 Both Surviving: 12638436 (97.02%) Forward Only Surviving: 285669 (2.19%) Reverse Only Surviving: 74952 (0.58%) Dropped: 27783 (0.21%)
+TrimmomaticPE: Completed successfully
+Finished job 7.
+2 of 22 steps (9%) done
+
+rule flash:
+    input: clean/L1_R1_paired.fastq.gz, clean/L1_R2_paired.fastq.gz
+    output: assemble/L1.extendedFrags.fastq, assemble/L1
+    jobid: 20
+    reason: Missing output files: assemble/L1.extendedFrags.fastq; Input files updated by another job: clean/L1_R1_paired.fastq.gz, clean/L1_R2_paired.fastq.gz
+    wildcards: sample=L1
+
+flash clean/L1_R1_paired.fastq.gz clean/L1_R2_paired.fastq.gz -o assemble/L1 -t 30 2>&1 |tee assemble/flash.log ;touch assemble/L1
+
+rule fastqc_clean_PE:
+    input: clean/L1_R1_paired.fastq.gz, clean/L1_R2_paired.fastq.gz
+    output: fastqc/clean/L1_R1_paired_fastqc.html, fastqc/clean/L1_R2_paired_fastqc.html
+    jobid: 14
+    reason: Missing output files: fastqc/clean/L1_R2_paired_fastqc.html, fastqc/clean/L1_R1_paired_fastqc.html; Input files updated by another job: clean/L1_R1_paired.fastq.gz, clean/L1_R2_paired.fastq.gz
+    wildcards: sample=L1
+
+fastqc -t 2 -o fastqc/clean clean/L1_R1_paired.fastq.gz clean/L1_R2_paired.fastq.gz
+[FLASH] Starting FLASH v1.2.11
+[FLASH] Fast Length Adjustment of SHort reads
+[FLASH]  
+[FLASH] Input files:
+[FLASH]     clean/L1_R1_paired.fastq.gz
+[FLASH]     clean/L1_R2_paired.fastq.gz
+[FLASH]  
+[FLASH] Output files:
+[FLASH]     ./assemble/L1.extendedFrags.fastq
+[FLASH]     ./assemble/L1.notCombined_1.fastq
+[FLASH]     ./assemble/L1.notCombined_2.fastq
+[FLASH]     ./assemble/L1.hist
+[FLASH]     ./assemble/L1.histogram
+[FLASH]  
+[FLASH] Parameters:
+[FLASH]     Min overlap:           10
+[FLASH]     Max overlap:           65
+[FLASH]     Max mismatch density:  0.250000
+[FLASH]     Allow "outie" pairs:   false
+[FLASH]     Cap mismatch quals:    false
+[FLASH]     Combiner threads:      30
+[FLASH]     Input format:          FASTQ, phred_offset=33
+[FLASH]     Output format:         FASTQ, phred_offset=33
+[FLASH]  
+[FLASH] Starting reader and writer threads
+[FLASH] Starting 30 combiner threads
+[FLASH] Processed 25000 read pairs
+Started analysis of L1_R1_paired.fastq.gz
+[FLASH] Processed 50000 read pairs
+[FLASH] Processed 75000 read pairs
+Started analysis of L1_R2_paired.fastq.gz
+[FLASH] Processed 100000 read pairs
+[FLASH] Processed 125000 read pairs
+[FLASH] Processed 150000 read pairs
+[FLASH] Processed 175000 read pairs
+[FLASH] Processed 200000 read pairs
+[FLASH] Processed 225000 read pairs
+[FLASH] Processed 250000 read pairs
+[FLASH] Processed 275000 read pairs
+[FLASH] Processed 300000 read pairs
+[FLASH] Processed 325000 read pairs
+[FLASH] Processed 350000 read pairs
+[FLASH] Processed 375000 read pairs
+[FLASH] Processed 400000 read pairs
+[FLASH] Processed 425000 read pairs
+[FLASH] Processed 450000 read pairs
+[FLASH] Processed 475000 read pairs
+[FLASH] Processed 500000 read pairs
+[FLASH] Processed 525000 read pairs
+[FLASH] Processed 550000 read pairs
+[FLASH] Processed 575000 read pairs
+[FLASH] Processed 600000 read pairs
+[FLASH] Processed 625000 read pairs
+[FLASH] Processed 650000 read pairs
+[FLASH] Processed 675000 read pairs
+[FLASH] Processed 700000 read pairs
+[FLASH] Processed 725000 read pairs
+[FLASH] Processed 750000 read pairs
+[FLASH] Processed 775000 read pairs
+[FLASH] Processed 800000 read pairs
+[FLASH] Processed 825000 read pairs
+[FLASH] Processed 850000 read pairs
+[FLASH] Processed 875000 read pairs
+[FLASH] Processed 900000 read pairs
+[FLASH] Processed 925000 read pairs
+[FLASH] Processed 950000 read pairs
+[FLASH] Processed 975000 read pairs
+[FLASH] Processed 1000000 read pairs
+[FLASH] Processed 1025000 read pairs
+[FLASH] Processed 1050000 read pairs
+[FLASH] Processed 1075000 read pairs
+[FLASH] Processed 1100000 read pairs
+[FLASH] Processed 1125000 read pairs
+[FLASH] Processed 1150000 read pairs
+[FLASH] Processed 1175000 read pairs
+[FLASH] Processed 1200000 read pairs
+[FLASH] Processed 1225000 read pairs
+[FLASH] Processed 1250000 read pairs
+[FLASH] Processed 1275000 read pairs
+[FLASH] Processed 1300000 read pairs
+[FLASH] Processed 1325000 read pairs
+[FLASH] Processed 1350000 read pairs
+[FLASH] Processed 1375000 read pairs
+[FLASH] Processed 1400000 read pairs
+[FLASH] Processed 1425000 read pairs
+[FLASH] Processed 1450000 read pairs
+[FLASH] Processed 1475000 read pairs
+[FLASH] Processed 1500000 read pairs
+[FLASH] Processed 1525000 read pairs
+[FLASH] Processed 1550000 read pairs
+[FLASH] Processed 1575000 read pairs
+[FLASH] Processed 1600000 read pairs
+Approx 5% complete for L1_R2_paired.fastq.gz
+[FLASH] Processed 1625000 read pairs
+Approx 5% complete for L1_R1_paired.fastq.gz
+[FLASH] Processed 1650000 read pairs
+[FLASH] Processed 1675000 read pairs
+[FLASH] Processed 1700000 read pairs
+[FLASH] Processed 1725000 read pairs
+[FLASH] Processed 1750000 read pairs
+[FLASH] Processed 1775000 read pairs
+[FLASH] Processed 1800000 read pairs
+[FLASH] Processed 1825000 read pairs
+[FLASH] Processed 1850000 read pairs
+[FLASH] Processed 1875000 read pairs
+[FLASH] Processed 1900000 read pairs
+[FLASH] Processed 1925000 read pairs
+[FLASH] Processed 1950000 read pairs
+[FLASH] Processed 1975000 read pairs
+[FLASH] Processed 2000000 read pairs
+[FLASH] Processed 2025000 read pairs
+[FLASH] Processed 2050000 read pairs
+[FLASH] Processed 2075000 read pairs
+[FLASH] Processed 2100000 read pairs
+[FLASH] Processed 2125000 read pairs
+[FLASH] Processed 2150000 read pairs
+[FLASH] Processed 2175000 read pairs
+[FLASH] Processed 2200000 read pairs
+[FLASH] Processed 2225000 read pairs
+[FLASH] Processed 2250000 read pairs
+[FLASH] Processed 2275000 read pairs
+[FLASH] Processed 2300000 read pairs
+[FLASH] Processed 2325000 read pairs
+[FLASH] Processed 2350000 read pairs
+[FLASH] Processed 2375000 read pairs
+[FLASH] Processed 2400000 read pairs
+[FLASH] Processed 2425000 read pairs
+[FLASH] Processed 2450000 read pairs
+[FLASH] Processed 2475000 read pairs
+[FLASH] Processed 2500000 read pairs
+[FLASH] Processed 2525000 read pairs
+[FLASH] Processed 2550000 read pairs
+[FLASH] Processed 2575000 read pairs
+[FLASH] Processed 2600000 read pairs
+[FLASH] Processed 2625000 read pairs
+[FLASH] Processed 2650000 read pairs
+[FLASH] Processed 2675000 read pairs
+[FLASH] Processed 2700000 read pairs
+[FLASH] Processed 2725000 read pairs
+[FLASH] Processed 2750000 read pairs
+[FLASH] Processed 2775000 read pairs
+[FLASH] Processed 2800000 read pairs
+[FLASH] Processed 2825000 read pairs
+[FLASH] Processed 2850000 read pairs
+[FLASH] Processed 2875000 read pairs
+[FLASH] Processed 2900000 read pairs
+[FLASH] Processed 2925000 read pairs
+[FLASH] Processed 2950000 read pairs
+[FLASH] Processed 2975000 read pairs
+[FLASH] Processed 3000000 read pairs
+[FLASH] Processed 3025000 read pairs
+[FLASH] Processed 3050000 read pairs
+[FLASH] Processed 3075000 read pairs
+[FLASH] Processed 3100000 read pairs
+[FLASH] Processed 3125000 read pairs
+[FLASH] Processed 3150000 read pairs
+[FLASH] Processed 3175000 read pairs
+[FLASH] Processed 3200000 read pairs
+Approx 10% complete for L1_R2_paired.fastq.gz
+[FLASH] Processed 3225000 read pairs
+[FLASH] Processed 3250000 read pairs
+[FLASH] Processed 3275000 read pairs
+[FLASH] Processed 3300000 read pairs
+Approx 10% complete for L1_R1_paired.fastq.gz
+[FLASH] Processed 3325000 read pairs
+[FLASH] Processed 3350000 read pairs
+[FLASH] Processed 3375000 read pairs
+[FLASH] Processed 3400000 read pairs
+[FLASH] Processed 3425000 read pairs
+[FLASH] Processed 3450000 read pairs
+[FLASH] Processed 3475000 read pairs
+[FLASH] Processed 3500000 read pairs
+[FLASH] Processed 3525000 read pairs
+[FLASH] Processed 3550000 read pairs
+[FLASH] Processed 3575000 read pairs
+[FLASH] Processed 3600000 read pairs
+[FLASH] Processed 3625000 read pairs
+[FLASH] Processed 3650000 read pairs
+[FLASH] Processed 3675000 read pairs
+[FLASH] Processed 3700000 read pairs
+[FLASH] Processed 3725000 read pairs
+[FLASH] Processed 3750000 read pairs
+[FLASH] Processed 3775000 read pairs
+[FLASH] Processed 3800000 read pairs
+[FLASH] Processed 3825000 read pairs
+[FLASH] Processed 3850000 read pairs
+[FLASH] Processed 3875000 read pairs
+[FLASH] Processed 3900000 read pairs
+[FLASH] Processed 3925000 read pairs
+[FLASH] Processed 3950000 read pairs
+[FLASH] Processed 3975000 read pairs
+[FLASH] Processed 4000000 read pairs
+[FLASH] Processed 4025000 read pairs
+[FLASH] Processed 4050000 read pairs
+[FLASH] Processed 4075000 read pairs
+[FLASH] Processed 4100000 read pairs
+[FLASH] Processed 4125000 read pairs
+[FLASH] Processed 4150000 read pairs
+[FLASH] Processed 4175000 read pairs
+[FLASH] Processed 4200000 read pairs
+[FLASH] Processed 4225000 read pairs
+[FLASH] Processed 4250000 read pairs
+[FLASH] Processed 4275000 read pairs
+[FLASH] Processed 4300000 read pairs
+[FLASH] Processed 4325000 read pairs
+[FLASH] Processed 4350000 read pairs
+[FLASH] Processed 4375000 read pairs
+[FLASH] Processed 4400000 read pairs
+[FLASH] Processed 4425000 read pairs
+[FLASH] Processed 4450000 read pairs
+[FLASH] Processed 4475000 read pairs
+[FLASH] Processed 4500000 read pairs
+[FLASH] Processed 4525000 read pairs
+[FLASH] Processed 4550000 read pairs
+[FLASH] Processed 4575000 read pairs
+[FLASH] Processed 4600000 read pairs
+[FLASH] Processed 4625000 read pairs
+[FLASH] Processed 4650000 read pairs
+[FLASH] Processed 4675000 read pairs
+[FLASH] Processed 4700000 read pairs
+[FLASH] Processed 4725000 read pairs
+[FLASH] Processed 4750000 read pairs
+[FLASH] Processed 4775000 read pairs
+[FLASH] Processed 4800000 read pairs
+[FLASH] Processed 4825000 read pairs
+Approx 15% complete for L1_R2_paired.fastq.gz
+[FLASH] Processed 4850000 read pairs
+[FLASH] Processed 4875000 read pairs
+[FLASH] Processed 4900000 read pairs
+[FLASH] Processed 4925000 read pairs
+[FLASH] Processed 4950000 read pairs
+[FLASH] Processed 4975000 read pairs
+Approx 15% complete for L1_R1_paired.fastq.gz
+[FLASH] Processed 5000000 read pairs
+[FLASH] Processed 5025000 read pairs
+[FLASH] Processed 5050000 read pairs
+[FLASH] Processed 5075000 read pairs
+[FLASH] Processed 5100000 read pairs
+[FLASH] Processed 5125000 read pairs
+[FLASH] Processed 5150000 read pairs
+[FLASH] Processed 5175000 read pairs
+[FLASH] Processed 5200000 read pairs
+[FLASH] Processed 5225000 read pairs
+[FLASH] Processed 5250000 read pairs
+[FLASH] Processed 5275000 read pairs
+[FLASH] Processed 5300000 read pairs
+[FLASH] Processed 5325000 read pairs
+[FLASH] Processed 5350000 read pairs
+[FLASH] Processed 5375000 read pairs
+[FLASH] Processed 5400000 read pairs
+[FLASH] Processed 5425000 read pairs
+[FLASH] Processed 5450000 read pairs
+[FLASH] Processed 5475000 read pairs
+[FLASH] Processed 5500000 read pairs
+[FLASH] Processed 5525000 read pairs
+[FLASH] Processed 5550000 read pairs
+[FLASH] Processed 5575000 read pairs
+[FLASH] Processed 5600000 read pairs
+[FLASH] Processed 5625000 read pairs
+[FLASH] Processed 5650000 read pairs
+[FLASH] Processed 5675000 read pairs
+[FLASH] Processed 5700000 read pairs
+[FLASH] Processed 5725000 read pairs
+[FLASH] Processed 5750000 read pairs
+[FLASH] Processed 5775000 read pairs
+[FLASH] Processed 5800000 read pairs
+[FLASH] Processed 5825000 read pairs
+[FLASH] Processed 5850000 read pairs
+[FLASH] Processed 5875000 read pairs
+[FLASH] Processed 5900000 read pairs
+[FLASH] Processed 5925000 read pairs
+[FLASH] Processed 5950000 read pairs
+[FLASH] Processed 5975000 read pairs
+[FLASH] Processed 6000000 read pairs
+[FLASH] Processed 6025000 read pairs
+[FLASH] Processed 6050000 read pairs
+[FLASH] Processed 6075000 read pairs
+[FLASH] Processed 6100000 read pairs
+[FLASH] Processed 6125000 read pairs
+[FLASH] Processed 6150000 read pairs
+[FLASH] Processed 6175000 read pairs
+[FLASH] Processed 6200000 read pairs
+[FLASH] Processed 6225000 read pairs
+[FLASH] Processed 6250000 read pairs
+Finished job 6.
+3 of 22 steps (14%) done
+[FLASH] Processed 6275000 read pairs
+[FLASH] Processed 6300000 read pairs
+[FLASH] Processed 6325000 read pairs
+[FLASH] Processed 6350000 read pairs
+[FLASH] Processed 6375000 read pairs
+[FLASH] Processed 6400000 read pairs
+[FLASH] Processed 6425000 read pairs
+[FLASH] Processed 6450000 read pairs
+Approx 20% complete for L1_R2_paired.fastq.gz
+[FLASH] Processed 6475000 read pairs
+[FLASH] Processed 6500000 read pairs
+[FLASH] Processed 6525000 read pairs
+[FLASH] Processed 6550000 read pairs
+[FLASH] Processed 6575000 read pairs
+[FLASH] Processed 6600000 read pairs
+[FLASH] Processed 6625000 read pairs
+[FLASH] Processed 6650000 read pairs
+[FLASH] Processed 6675000 read pairs
+[FLASH] Processed 6700000 read pairs
+Approx 20% complete for L1_R1_paired.fastq.gz
+[FLASH] Processed 6725000 read pairs
+[FLASH] Processed 6750000 read pairs
+[FLASH] Processed 6775000 read pairs
+[FLASH] Processed 6800000 read pairs
+[FLASH] Processed 6825000 read pairs
+[FLASH] Processed 6850000 read pairs
+[FLASH] Processed 6875000 read pairs
+[FLASH] Processed 6900000 read pairs
+[FLASH] Processed 6925000 read pairs
+[FLASH] Processed 6950000 read pairs
+[FLASH] Processed 6975000 read pairs
+[FLASH] Processed 7000000 read pairs
+[FLASH] Processed 7025000 read pairs
+[FLASH] Processed 7050000 read pairs
+[FLASH] Processed 7075000 read pairs
+[FLASH] Processed 7100000 read pairs
+[FLASH] Processed 7125000 read pairs
+[FLASH] Processed 7150000 read pairs
+[FLASH] Processed 7175000 read pairs
+[FLASH] Processed 7200000 read pairs
+[FLASH] Processed 7225000 read pairs
+[FLASH] Processed 7250000 read pairs
+[FLASH] Processed 7275000 read pairs
+[FLASH] Processed 7300000 read pairs
+[FLASH] Processed 7325000 read pairs
+[FLASH] Processed 7350000 read pairs
+[FLASH] Processed 7375000 read pairs
+[FLASH] Processed 7400000 read pairs
+[FLASH] Processed 7425000 read pairs
+[FLASH] Processed 7450000 read pairs
+[FLASH] Processed 7475000 read pairs
+[FLASH] Processed 7500000 read pairs
+[FLASH] Processed 7525000 read pairs
+[FLASH] Processed 7550000 read pairs
+[FLASH] Processed 7575000 read pairs
+[FLASH] Processed 7600000 read pairs
+[FLASH] Processed 7625000 read pairs
+[FLASH] Processed 7650000 read pairs
+[FLASH] Processed 7675000 read pairs
+[FLASH] Processed 7700000 read pairs
+[FLASH] Processed 7725000 read pairs
+[FLASH] Processed 7750000 read pairs
+[FLASH] Processed 7775000 read pairs
+[FLASH] Processed 7800000 read pairs
+[FLASH] Processed 7825000 read pairs
+[FLASH] Processed 7850000 read pairs
+[FLASH] Processed 7875000 read pairs
+[FLASH] Processed 7900000 read pairs
+[FLASH] Processed 7925000 read pairs
+Approx 25% complete for L1_R2_paired.fastq.gz
+[FLASH] Processed 7950000 read pairs
+[FLASH] Processed 7975000 read pairs
+[FLASH] Processed 8000000 read pairs
+[FLASH] Processed 8025000 read pairs
+[FLASH] Processed 8050000 read pairs
+[FLASH] Processed 8075000 read pairs
+[FLASH] Processed 8100000 read pairs
+[FLASH] Processed 8125000 read pairs
+[FLASH] Processed 8150000 read pairs
+[FLASH] Processed 8175000 read pairs
+Approx 25% complete for L1_R1_paired.fastq.gz
+[FLASH] Processed 8200000 read pairs
+[FLASH] Processed 8225000 read pairs
+[FLASH] Processed 8250000 read pairs
+[FLASH] Processed 8275000 read pairs
+[FLASH] Processed 8300000 read pairs
+[FLASH] Processed 8325000 read pairs
+[FLASH] Processed 8350000 read pairs
+[FLASH] Processed 8375000 read pairs
+[FLASH] Processed 8400000 read pairs
+[FLASH] Processed 8425000 read pairs
+[FLASH] Processed 8450000 read pairs
+[FLASH] Processed 8475000 read pairs
+[FLASH] Processed 8500000 read pairs
+[FLASH] Processed 8525000 read pairs
+[FLASH] Processed 8550000 read pairs
+[FLASH] Processed 8575000 read pairs
+[FLASH] Processed 8600000 read pairs
+[FLASH] Processed 8625000 read pairs
+[FLASH] Processed 8650000 read pairs
+[FLASH] Processed 8675000 read pairs
+[FLASH] Processed 8700000 read pairs
+[FLASH] Processed 8725000 read pairs
+[FLASH] Processed 8750000 read pairs
+[FLASH] Processed 8775000 read pairs
+[FLASH] Processed 8800000 read pairs
+[FLASH] Processed 8825000 read pairs
+[FLASH] Processed 8850000 read pairs
+[FLASH] Processed 8875000 read pairs
+[FLASH] Processed 8900000 read pairs
+[FLASH] Processed 8925000 read pairs
+[FLASH] Processed 8950000 read pairs
+[FLASH] Processed 8975000 read pairs
+[FLASH] Processed 9000000 read pairs
+[FLASH] Processed 9025000 read pairs
+[FLASH] Processed 9050000 read pairs
+[FLASH] Processed 9075000 read pairs
+[FLASH] Processed 9100000 read pairs
+[FLASH] Processed 9125000 read pairs
+[FLASH] Processed 9150000 read pairs
+[FLASH] Processed 9175000 read pairs
+[FLASH] Processed 9200000 read pairs
+[FLASH] Processed 9225000 read pairs
+[FLASH] Processed 9250000 read pairs
+[FLASH] Processed 9275000 read pairs
+[FLASH] Processed 9300000 read pairs
+[FLASH] Processed 9325000 read pairs
+[FLASH] Processed 9350000 read pairs
+[FLASH] Processed 9375000 read pairs
+Approx 30% complete for L1_R2_paired.fastq.gz
+[FLASH] Processed 9400000 read pairs
+[FLASH] Processed 9425000 read pairs
+[FLASH] Processed 9450000 read pairs
+[FLASH] Processed 9475000 read pairs
+[FLASH] Processed 9500000 read pairs
+[FLASH] Processed 9525000 read pairs
+[FLASH] Processed 9550000 read pairs
+[FLASH] Processed 9575000 read pairs
+[FLASH] Processed 9600000 read pairs
+[FLASH] Processed 9625000 read pairs
+[FLASH] Processed 9650000 read pairs
+Approx 30% complete for L1_R1_paired.fastq.gz
+[FLASH] Processed 9675000 read pairs
+[FLASH] Processed 9700000 read pairs
+[FLASH] Processed 9725000 read pairs
+[FLASH] Processed 9750000 read pairs
+[FLASH] Processed 9775000 read pairs
+[FLASH] Processed 9800000 read pairs
+[FLASH] Processed 9825000 read pairs
+[FLASH] Processed 9850000 read pairs
+[FLASH] Processed 9875000 read pairs
+[FLASH] Processed 9900000 read pairs
+[FLASH] Processed 9925000 read pairs
+[FLASH] Processed 9950000 read pairs
+[FLASH] Processed 9975000 read pairs
+[FLASH] Processed 10000000 read pairs
+[FLASH] Processed 10025000 read pairs
+[FLASH] Processed 10050000 read pairs
+[FLASH] Processed 10075000 read pairs
+[FLASH] Processed 10100000 read pairs
+[FLASH] Processed 10125000 read pairs
+[FLASH] Processed 10150000 read pairs
+[FLASH] Processed 10175000 read pairs
+[FLASH] Processed 10200000 read pairs
+[FLASH] Processed 10225000 read pairs
+[FLASH] Processed 10250000 read pairs
+[FLASH] Processed 10275000 read pairs
+[FLASH] Processed 10300000 read pairs
+[FLASH] Processed 10325000 read pairs
+[FLASH] Processed 10350000 read pairs
+[FLASH] Processed 10375000 read pairs
+[FLASH] Processed 10400000 read pairs
+[FLASH] Processed 10425000 read pairs
+[FLASH] Processed 10450000 read pairs
+[FLASH] Processed 10475000 read pairs
+[FLASH] Processed 10500000 read pairs
+[FLASH] Processed 10525000 read pairs
+[FLASH] Processed 10550000 read pairs
+[FLASH] Processed 10575000 read pairs
+[FLASH] Processed 10600000 read pairs
+[FLASH] Processed 10625000 read pairs
+[FLASH] Processed 10650000 read pairs
+[FLASH] Processed 10675000 read pairs
+[FLASH] Processed 10700000 read pairs
+[FLASH] Processed 10725000 read pairs
+[FLASH] Processed 10750000 read pairs
+[FLASH] Processed 10775000 read pairs
+[FLASH] Processed 10800000 read pairs
+[FLASH] Processed 10825000 read pairs
+Approx 35% complete for L1_R2_paired.fastq.gz
+[FLASH] Processed 10850000 read pairs
+[FLASH] Processed 10875000 read pairs
+[FLASH] Processed 10900000 read pairs
+[FLASH] Processed 10925000 read pairs
+[FLASH] Processed 10950000 read pairs
+[FLASH] Processed 10975000 read pairs
+[FLASH] Processed 11000000 read pairs
+[FLASH] Processed 11025000 read pairs
+[FLASH] Processed 11050000 read pairs
+[FLASH] Processed 11075000 read pairs
+[FLASH] Processed 11100000 read pairs
+[FLASH] Processed 11125000 read pairs
+Approx 35% complete for L1_R1_paired.fastq.gz
+[FLASH] Processed 11150000 read pairs
+[FLASH] Processed 11175000 read pairs
+[FLASH] Processed 11200000 read pairs
+[FLASH] Processed 11225000 read pairs
+[FLASH] Processed 11250000 read pairs
+[FLASH] Processed 11275000 read pairs
+[FLASH] Processed 11300000 read pairs
+[FLASH] Processed 11325000 read pairs
+[FLASH] Processed 11350000 read pairs
+[FLASH] Processed 11375000 read pairs
+[FLASH] Processed 11400000 read pairs
+[FLASH] Processed 11425000 read pairs
+[FLASH] Processed 11450000 read pairs
+[FLASH] Processed 11475000 read pairs
+[FLASH] Processed 11500000 read pairs
+[FLASH] Processed 11525000 read pairs
+[FLASH] Processed 11550000 read pairs
+[FLASH] Processed 11575000 read pairs
+[FLASH] Processed 11600000 read pairs
+[FLASH] Processed 11625000 read pairs
+[FLASH] Processed 11650000 read pairs
+[FLASH] Processed 11675000 read pairs
+[FLASH] Processed 11700000 read pairs
+[FLASH] Processed 11725000 read pairs
+[FLASH] Processed 11750000 read pairs
+[FLASH] Processed 11775000 read pairs
+[FLASH] Processed 11800000 read pairs
+[FLASH] Processed 11825000 read pairs
+[FLASH] Processed 11850000 read pairs
+[FLASH] Processed 11875000 read pairs
+[FLASH] Processed 11900000 read pairs
+[FLASH] Processed 11925000 read pairs
+[FLASH] Processed 11950000 read pairs
+[FLASH] Processed 11975000 read pairs
+[FLASH] Processed 12000000 read pairs
+[FLASH] Processed 12025000 read pairs
+[FLASH] Processed 12050000 read pairs
+[FLASH] Processed 12075000 read pairs
+[FLASH] Processed 12100000 read pairs
+[FLASH] Processed 12125000 read pairs
+[FLASH] Processed 12150000 read pairs
+[FLASH] Processed 12175000 read pairs
+[FLASH] Processed 12200000 read pairs
+[FLASH] Processed 12225000 read pairs
+Approx 40% complete for L1_R2_paired.fastq.gz
+[FLASH] Processed 12250000 read pairs
+[FLASH] Processed 12275000 read pairs
+[FLASH] Processed 12300000 read pairs
+[FLASH] Processed 12325000 read pairs
+[FLASH] Processed 12350000 read pairs
+[FLASH] Processed 12375000 read pairs
+[FLASH] Processed 12400000 read pairs
+[FLASH] Processed 12425000 read pairs
+[FLASH] Processed 12450000 read pairs
+[FLASH] Processed 12475000 read pairs
+[FLASH] Processed 12500000 read pairs
+[FLASH] Processed 12525000 read pairs
+[FLASH] Processed 12550000 read pairs
+Approx 40% complete for L1_R1_paired.fastq.gz
+[FLASH] Processed 12575000 read pairs
+[FLASH] Processed 12600000 read pairs
+[FLASH] Processed 12625000 read pairs
+[FLASH] Processed 12638436 read pairs
+[FLASH]  
+[FLASH] Read combination statistics:
+[FLASH]     Total pairs:      12638436
+[FLASH]     Combined pairs:   9772261
+[FLASH]     Uncombined pairs: 2866175
+[FLASH]     Percent combined: 77.32%
+[FLASH]  
+[FLASH] Writing histogram files.
+[FLASH] WARNING: An unexpectedly high proportion of combined pairs (48.52%)
+overlapped by more than 65 bp, the --max-overlap (-M) parameter.  Consider
+increasing this parameter.  (As-is, FLASH is penalizing overlaps longer than
+65 bp when considering them for possible combining!)
+[FLASH]  
+[FLASH] FLASH v1.2.11 complete!
+[FLASH] 110.744 seconds elapsed
+[FLASH] Finished with 1 warning (see above)
+Finished job 20.
+4 of 22 steps (18%) done
+
+rule extract_barcode:
+    input: assemble/L1.extendedFrags.fastq
+    output: barcode/L1_barcode, barcode/L1_barcode/barcodes.fastq
+    jobid: 12
+    reason: Missing output files: barcode/L1_barcode/barcodes.fastq; Input files updated by another job: assemble/L1.extendedFrags.fastq
+    wildcards: sample=L1
+
+extract_barcodes.py -f assemble/L1.extendedFrags.fastq -o barcode/L1_barcode -c barcode_in_label --char_delineator '1:N:0:' -l 15
+Waiting at most 5 seconds for missing files.
+Error in job extract_barcode while creating output files barcode/L1_barcode, barcode/L1_barcode/barcodes.fastq.
+MissingOutputException in line 106 of /var/data/16.Richa_16s/Snakefile:
+Missing files after 5 seconds:
+barcode/L1_barcode/barcodes.fastq
+This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait.
+Removing output files of failed job extract_barcode since they might be corrupted:
+barcode/L1_barcode
+Will exit after finishing currently running jobs.
+Approx 45% complete for L1_R2_paired.fastq.gz
+Approx 45% complete for L1_R1_paired.fastq.gz
+Approx 50% complete for L1_R1_paired.fastq.gz
+Approx 50% complete for L1_R2_paired.fastq.gz
+Approx 55% complete for L1_R1_paired.fastq.gz
+Approx 55% complete for L1_R2_paired.fastq.gz
+Approx 60% complete for L1_R1_paired.fastq.gz
+Approx 60% complete for L1_R2_paired.fastq.gz
+Approx 65% complete for L1_R2_paired.fastq.gz
+Approx 65% complete for L1_R1_paired.fastq.gz
+Approx 70% complete for L1_R2_paired.fastq.gz
+Approx 70% complete for L1_R1_paired.fastq.gz
+Approx 75% complete for L1_R2_paired.fastq.gz
+Approx 75% complete for L1_R1_paired.fastq.gz
+Approx 80% complete for L1_R2_paired.fastq.gz
+Approx 80% complete for L1_R1_paired.fastq.gz
+Approx 85% complete for L1_R2_paired.fastq.gz
+Approx 85% complete for L1_R1_paired.fastq.gz
+Approx 90% complete for L1_R2_paired.fastq.gz
+Approx 90% complete for L1_R1_paired.fastq.gz
+Approx 95% complete for L1_R2_paired.fastq.gz
+Approx 95% complete for L1_R1_paired.fastq.gz
+Analysis complete for L1_R2_paired.fastq.gz
+Input Read Pairs: 15633498 Both Surviving: 15251429 (97.56%) Forward Only Surviving: 260985 (1.67%) Reverse Only Surviving: 90349 (0.58%) Dropped: 30735 (0.20%)
+TrimmomaticPE: Completed successfully
+Finished job 2.
+5 of 22 steps (23%) done
+Will exit after finishing currently running jobs.
+Analysis complete for L1_R1_paired.fastq.gz
+Finished job 14.
+6 of 22 steps (27%) done
+Will exit after finishing currently running jobs.
+Exiting because a job execution failed. Look above for error message
+Provided cores: 30
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	alpha_raw_diversity
+	1	biom_summary
+	1	fastqc_clean_PE
+	1	fastqc_stat_PE
+	1	merge_seq
+	1	otu_summary
+	1	otu_table
+	1	pick_otus
+	1	remove_chimeric
+	1	split_file
+	2	split_library
+	13
+
+rule fastqc_clean_PE:
+    input: clean/L2_R1_paired.fastq.gz, clean/L2_R2_paired.fastq.gz
+    output: fastqc/clean/L2_R1_paired_fastqc.html, fastqc/clean/L2_R2_paired_fastqc.html
+    jobid: 18
+    reason: Missing output files: fastqc/clean/L2_R1_paired_fastqc.html, fastqc/clean/L2_R2_paired_fastqc.html
+    wildcards: sample=L2
+
+fastqc -t 2 -o fastqc/clean clean/L2_R1_paired.fastq.gz clean/L2_R2_paired.fastq.gz
+rule split_library:
+    input: assemble/L2.extendedFrags.fastq, barcode/L2_barcode/barcodes.fastq, doc/L2_map.tsv
+    output: demuplix/L2/seqs.fna, demuplix/L2
+    jobid: 14
+    reason: Missing output files: demuplix/L2/seqs.fna
+    wildcards: sample=L2
+
+split_libraries_fastq.py -o demuplix/L2 -i assemble/L2.extendedFrags.fastq -b barcode/L2_barcode/barcodes.fastq -m doc/L2_map.tsv --barcode_type 15 
+
+rule split_library:
+    input: assemble/L1.extendedFrags.fastq, barcode/L1_barcode/barcodes.fastq, doc/L1_map.tsv
+    output: demuplix/L1/seqs.fna, demuplix/L1
+    jobid: 12
+    reason: Missing output files: demuplix/L1/seqs.fna
+    wildcards: sample=L1
+
+split_libraries_fastq.py -o demuplix/L1 -i assemble/L1.extendedFrags.fastq -b barcode/L1_barcode/barcodes.fastq -m doc/L1_map.tsv --barcode_type 15 
+Started analysis of L2_R1_paired.fastq.gz
+Started analysis of L2_R2_paired.fastq.gz
+Traceback (most recent call last):
+  File "/home/galaxy/miniconda3/envs/qiime1/bin/split_libraries_fastq.py", line 4, in <module>
+    __import__('pkg_resources').run_script('qiime==1.9.1', 'split_libraries_fastq.py')
+  File "/home/galaxy/miniconda3/envs/qiime1/lib/python2.7/site-packages/pkg_resources/__init__.py", line 658, in run_script
+Traceback (most recent call last):
+  File "/home/galaxy/miniconda3/envs/qiime1/bin/split_libraries_fastq.py", line 4, in <module>
+    __import__('pkg_resources').run_script('qiime==1.9.1', 'split_libraries_fastq.py')
+  File "/home/galaxy/miniconda3/envs/qiime1/lib/python2.7/site-packages/pkg_resources/__init__.py", line 658, in run_script
+    self.require(requires)[0].run_script(script_name, ns)
+      File "/home/galaxy/miniconda3/envs/qiime1/lib/python2.7/site-packages/pkg_resources/__init__.py", line 1438, in run_script
+self.require(requires)[0].run_script(script_name, ns)
+  File "/home/galaxy/miniconda3/envs/qiime1/lib/python2.7/site-packages/pkg_resources/__init__.py", line 1438, in run_script
+    exec(code, namespace, namespace)
+  File "/home/galaxy/miniconda3/envs/qiime1/lib/python2.7/site-packages/qiime-1.9.1-py2.7.egg-info/scripts/split_libraries_fastq.py", line 365, in <module>
+    exec(code, namespace, namespace)
+  File "/home/galaxy/miniconda3/envs/qiime1/lib/python2.7/site-packages/qiime-1.9.1-py2.7.egg-info/scripts/split_libraries_fastq.py", line 365, in <module>
+    main()
+  File "/home/galaxy/miniconda3/envs/qiime1/lib/python2.7/site-packages/qiime-1.9.1-py2.7.egg-info/scripts/split_libraries_fastq.py", line 272, in main
+    main()
+  File "/home/galaxy/miniconda3/envs/qiime1/lib/python2.7/site-packages/qiime-1.9.1-py2.7.egg-info/scripts/split_libraries_fastq.py", line 272, in main
+    has_barcodes=barcode_read_fp is not None)
+  File "/home/galaxy/miniconda3/envs/qiime1/lib/python2.7/site-packages/qiime/split_libraries.py", line 310, in check_map
+    has_barcodes=barcode_read_fp is not None)
+  File "/home/galaxy/miniconda3/envs/qiime1/lib/python2.7/site-packages/qiime/split_libraries.py", line 310, in check_map
+    'identify problems.')
+    ValueError'identify problems.')
+: Errors were found with mapping file, please run validate_mapping_file.py to identify problems.
+ValueError: Errors were found with mapping file, please run validate_mapping_file.py to identify problems.
+Error in job split_library while creating output files demuplix/L1/seqs.fna, demuplix/L1.
+Error in job split_library while creating output files demuplix/L2/seqs.fna, demuplix/L2.
+RuleException:
+CalledProcessError in line 124 of /var/data/16.Richa_16s/Snakefile:
+Command 'split_libraries_fastq.py -o demuplix/L2 -i assemble/L2.extendedFrags.fastq -b barcode/L2_barcode/barcodes.fastq -m doc/L2_map.tsv --barcode_type 15 ' returned non-zero exit status 1.
+  File "/var/data/16.Richa_16s/Snakefile", line 124, in __rule_split_library
+  File "/home/galaxy/miniconda3/envs/gmatic/lib/python3.6/concurrent/futures/thread.py", line 55, in run
+Removing output files of failed job split_library since they might be corrupted:
+demuplix/L2
+RuleException:
+CalledProcessError in line 124 of /var/data/16.Richa_16s/Snakefile:
+Command 'split_libraries_fastq.py -o demuplix/L1 -i assemble/L1.extendedFrags.fastq -b barcode/L1_barcode/barcodes.fastq -m doc/L1_map.tsv --barcode_type 15 ' returned non-zero exit status 1.
+  File "/var/data/16.Richa_16s/Snakefile", line 124, in __rule_split_library
+  File "/home/galaxy/miniconda3/envs/gmatic/lib/python3.6/concurrent/futures/thread.py", line 55, in run
+Skipped removing non-empty directory demuplix/L2
+Removing output files of failed job split_library since they might be corrupted:
+demuplix/L1
+Skipped removing non-empty directory demuplix/L1
+Will exit after finishing currently running jobs.
+Approx 5% complete for L2_R1_paired.fastq.gz
+Approx 5% complete for L2_R2_paired.fastq.gz
+Approx 10% complete for L2_R1_paired.fastq.gz
+Approx 10% complete for L2_R2_paired.fastq.gz
+Approx 15% complete for L2_R1_paired.fastq.gz
+Approx 15% complete for L2_R2_paired.fastq.gz
+Approx 20% complete for L2_R1_paired.fastq.gz
+Approx 20% complete for L2_R2_paired.fastq.gz
+Approx 25% complete for L2_R1_paired.fastq.gz
+Approx 25% complete for L2_R2_paired.fastq.gz
+Approx 30% complete for L2_R2_paired.fastq.gz
+Approx 30% complete for L2_R1_paired.fastq.gz
+Approx 35% complete for L2_R1_paired.fastq.gz
+Approx 35% complete for L2_R2_paired.fastq.gz
+Approx 40% complete for L2_R1_paired.fastq.gz
+Approx 40% complete for L2_R2_paired.fastq.gz
+Approx 45% complete for L2_R1_paired.fastq.gz
+Approx 45% complete for L2_R2_paired.fastq.gz
+Approx 50% complete for L2_R1_paired.fastq.gz
+Approx 50% complete for L2_R2_paired.fastq.gz
+Approx 55% complete for L2_R1_paired.fastq.gz
+Approx 55% complete for L2_R2_paired.fastq.gz
+Approx 60% complete for L2_R1_paired.fastq.gz
+Approx 60% complete for L2_R2_paired.fastq.gz
+Approx 65% complete for L2_R1_paired.fastq.gz
+Approx 65% complete for L2_R2_paired.fastq.gz
+Approx 70% complete for L2_R1_paired.fastq.gz
+Approx 70% complete for L2_R2_paired.fastq.gz
+Approx 75% complete for L2_R1_paired.fastq.gz
+Approx 75% complete for L2_R2_paired.fastq.gz
+Approx 80% complete for L2_R1_paired.fastq.gz
+Approx 80% complete for L2_R2_paired.fastq.gz
+Approx 85% complete for L2_R1_paired.fastq.gz
+Approx 85% complete for L2_R2_paired.fastq.gz
+Approx 90% complete for L2_R1_paired.fastq.gz
+Approx 90% complete for L2_R2_paired.fastq.gz
+Approx 95% complete for L2_R1_paired.fastq.gz
+Approx 95% complete for L2_R2_paired.fastq.gz
+Analysis complete for L2_R1_paired.fastq.gz
+Analysis complete for L2_R2_paired.fastq.gz
+Finished job 18.
+1 of 13 steps (8%) done
+Will exit after finishing currently running jobs.
+Exiting because a job execution failed. Look above for error message
+Provided cores: 30
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	alpha_raw_diversity
+	1	biom_summary
+	1	fastqc_stat_PE
+	1	merge_seq
+	1	otu_summary
+	1	otu_table
+	1	pick_otus
+	1	remove_chimeric
+	1	split_file
+	2	split_library
+	12
+
+rule split_library:
+    input: assemble/L2.extendedFrags.fastq, barcode/L2_barcode/barcodes.fastq, doc/L2_map.tsv
+    output: demuplix/L2/seqs.fna, demuplix/L2
+    jobid: 12
+    reason: Missing output files: demuplix/L2/seqs.fna; Updated input files: doc/L2_map.tsv
+    wildcards: sample=L2
+
+Skipped removing non-empty directory demuplix/L2
+split_libraries_fastq.py -o demuplix/L2 -i assemble/L2.extendedFrags.fastq -b barcode/L2_barcode/barcodes.fastq -m doc/L2_map.tsv --barcode_type 15 
+
+rule fastqc_stat_PE:
+    input: fastqc/raw/L1_R1_fastqc.html, fastqc/raw/L2_R1_fastqc.html, fastqc/raw/L1_R2_fastqc.html, fastqc/raw/L2_R2_fastqc.html, fastqc/clean/L1_R1_paired_fastqc.html, fastqc/clean/L2_R1_paired_fastqc.html, fastqc/clean/L1_R2_paired_fastqc.html, fastqc/clean/L2_R2_paired_fastqc.html
+    output: stat/fastqc_stat.tsv
+    jobid: 8
+    reason: Missing output files: stat/fastqc_stat.tsv
+
+/home/lpeng/software/R3.2.5/bin/Rscript script/reads_stat_by_fastqcr.R
+
+rule split_library:
+    input: assemble/L1.extendedFrags.fastq, barcode/L1_barcode/barcodes.fastq, doc/L1_map.tsv
+    output: demuplix/L1/seqs.fna, demuplix/L1
+    jobid: 15
+    reason: Missing output files: demuplix/L1/seqs.fna; Updated input files: doc/L1_map.tsv
+    wildcards: sample=L1
+
+Skipped removing non-empty directory demuplix/L1
+/bin/bash: /home/lpeng/software/R3.2.5/bin/Rscript: No such file or directory
+split_libraries_fastq.py -o demuplix/L1 -i assemble/L1.extendedFrags.fastq -b barcode/L1_barcode/barcodes.fastq -m doc/L1_map.tsv --barcode_type 15 
+Error in job fastqc_stat_PE while creating output file stat/fastqc_stat.tsv.
+RuleException:
+CalledProcessError in line 84 of /var/data/16.Richa_16s/Snakefile:
+Command '/home/lpeng/software/R3.2.5/bin/Rscript script/reads_stat_by_fastqcr.R' returned non-zero exit status 1.
+  File "/var/data/16.Richa_16s/Snakefile", line 84, in __rule_fastqc_stat_PE
+  File "/home/galaxy/miniconda3/envs/gmatic/lib/python3.6/concurrent/futures/thread.py", line 55, in run
+Will exit after finishing currently running jobs.
+Finished job 15.
+1 of 12 steps (8%) done
+Finished job 12.
+2 of 12 steps (17%) done
+Will exit after finishing currently running jobs.
+Exiting because a job execution failed. Look above for error message
